@@ -1,0 +1,556 @@
+openapi: 3.0.4
+info:
+  title: Recomendaciones y Estadísticas (RYE)
+  description: Esta es la documentación para la API del Microservicio de Recomendaciones
+    y Estadísticas (RYE) del proyecto OverSounds.
+  version: 2.0.0
+externalDocs:
+  description: Github access
+  url: https://github.com/orgs/UniExtremadura/teams/gb02
+servers:
+- url: http://localhost
+tags:
+- name: history
+  description: Everything you need for an user's history.
+- name: recommendations
+  description: Everything you need for user recs
+- name: statistics
+  description: Access to platform statistics
+paths:
+  /history/artists:
+    post:
+      tags:
+      - history
+      summary: Add an artist to an user's history.
+      description: Add an artist to an user's history.
+      operationId: post_artist_history
+      requestBody:
+        description: Adds an artist to an user's history.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/History"
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: User not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+      - oversound_auth:
+        - write
+        - read
+      x-openapi-router-controller: swagger_server.controllers.history_controller
+    delete:
+      tags:
+      - history
+      summary: Deletes an artist from user's history.
+      description: Delete an user's artist history.
+      operationId: delete_artist_history
+      requestBody:
+        $ref: "#/components/requestBodies/Identifier"
+      responses:
+        "200":
+          description: Artist deleted from history
+        "400":
+          description: Invalid ID supplied
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+      - oversound_auth:
+        - write
+        - read
+      x-openapi-router-controller: swagger_server.controllers.history_controller
+  /history/songs:
+    post:
+      tags:
+      - history
+      summary: Add a song to an user's song history.
+      description: Add a song to an existing user's song history.
+      operationId: new_song_history
+      requestBody:
+        description: Add a song to an user's song history.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/History"
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: User not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+      - oversound_auth:
+        - write
+        - read
+      x-openapi-router-controller: swagger_server.controllers.history_controller
+    delete:
+      tags:
+      - history
+      summary: Deletes a song from user's history.
+      description: Delete an user's song history.
+      operationId: delete_song_history
+      requestBody:
+        $ref: "#/components/requestBodies/Identifier"
+      responses:
+        "200":
+          description: Song deleted
+        "400":
+          description: Invalid pet value
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+      - oversound_auth:
+        - write
+        - read
+      x-openapi-router-controller: swagger_server.controllers.history_controller
+  /history/user-metrics:
+    get:
+      tags:
+      - history
+      summary: Get an user's metrics.
+      description: "Returns an user's top artist, top song and total listening time."
+      operationId: get_user_metrics
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserMetrics"
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: User not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+      - oversound_auth:
+        - read
+      x-openapi-router-controller: swagger_server.controllers.history_controller
+  /history/user-genres:
+    get:
+      tags:
+      - history
+      summary: Get an user's genre count.
+      description: Returns the genre types that an user has listened to and the amount
+        of songs per genre.
+      operationId: get_genre_count
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserGenres"
+                x-content-type: application/json
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: User not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+      - oversound_auth:
+        - read
+      x-openapi-router-controller: swagger_server.controllers.history_controller
+  /recommendations/artist:
+    get:
+      tags:
+      - recommendations
+      summary: Get artist recommendations.
+      description: Returns artist recommendations.
+      operationId: get_artist_recs
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ArtistRecommendations"
+                x-content-type: application/json
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: User not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+      - oversound_auth:
+        - read
+      x-openapi-router-controller: swagger_server.controllers.recommendations_controller
+  /recommendations/song:
+    get:
+      tags:
+      - recommendations
+      summary: Get song recommendations.
+      description: Returns song recommendations.
+      operationId: get_song_recs
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SongRecommendations"
+                x-content-type: application/json
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: User not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+      - oversound_auth:
+        - read
+      x-openapi-router-controller: swagger_server.controllers.recommendations_controller
+  /statistics/metrics/song/{songId}:
+    get:
+      tags:
+      - statistics
+      summary: Get song metrics by ID.
+      description: "Returns the song's all-time playblacks, sales and downloads."
+      operationId: get_song_metrics
+      parameters:
+      - name: songId
+        in: path
+        description: ID of chosen song.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SongMetrics"
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Song not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      x-openapi-router-controller: swagger_server.controllers.statistics_controller
+  /statistics/metrics/artist/{artistId}:
+    get:
+      tags:
+      - statistics
+      summary: Get artist metrics by ID.
+      description: "Returns the artist's all-time playblacks, number of songs, and\
+        \ current popularity placing."
+      operationId: get_artist_metrics
+      parameters:
+      - name: artistId
+        in: path
+        description: ID of artist.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArtistMetrics"
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Artist not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      x-openapi-router-controller: swagger_server.controllers.statistics_controller
+  /statistics/top-10-songs:
+    get:
+      tags:
+      - statistics
+      summary: Get the top 10 songs.
+      description: Returns the most listened songs.
+      operationId: get_top10_songs
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SongRecommendations"
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.statistics_controller
+  /statistics/top-10-artists:
+    get:
+      tags:
+      - statistics
+      summary: Get the top 10 artists.
+      description: Returns the most listened artists.
+      operationId: get_top10_artists
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ArtistRecommendations"
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.statistics_controller
+components:
+  schemas:
+    History:
+      required:
+      - id
+      - playbacks
+      - startDate
+      - subjectId
+      type: object
+      properties:
+        id:
+          type: integer
+          description: User's identifier
+          example: 10
+        subjectId:
+          type: integer
+          description: Identifier of the element (song or artist) in the history
+          example: 198772
+        playbacks:
+          type: integer
+          description: Number of playbacks of the element
+          example: 7
+        startDate:
+          type: string
+          description: Start date and time of the record
+          format: date-time
+    Identifier:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Some ID
+          example: 10
+    UserMetrics:
+      type: object
+      properties:
+        listenTime:
+          type: integer
+          description: Total listening time of the user in minutes
+          example: 10
+        topArtistId:
+          type: integer
+          description: Identifier of the most listened artist by the user
+          example: 198772
+        topSongId:
+          type: integer
+          description: Identifier of the most listened song by the user
+          example: 7
+      example:
+        listenTime: 10
+        topSongId: 7
+        topArtistId: 198772
+    UserGenres:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the genre record
+          example: 10
+        genre:
+          type: string
+          description: Name of the musical genre
+          example: Rock
+        count:
+          type: integer
+          description: Number of songs listened to of this genre
+          example: 7
+      example:
+        genre: Rock
+        count: 7
+        id: 10
+    ArtistRecommendations:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the artist
+          example: 1
+        name:
+          type: string
+          description: Name of the artist
+          example: Juanito
+        image:
+          type: string
+          description: URL of the artist's image
+          example: https://example.com/images/artist.jpg
+      example:
+        image: https://example.com/images/artist.jpg
+        name: Juanito
+        id: 1
+    SongRecommendations:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the song
+          example: 1
+        name:
+          type: string
+          description: Name of the song
+          example: Juanito
+        genre:
+          type: string
+          description: Musical genre of the song
+          example: Rock
+        image:
+          type: string
+          description: URL of the song's cover image
+          example: https://example.com/images/song-cover.jpg
+      example:
+        image: https://example.com/images/song-cover.jpg
+        name: Juanito
+        genre: Rock
+        id: 1
+    SongMetrics:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the song
+          example: 1
+        playbacks:
+          type: integer
+          description: Total number of playbacks of the song
+          example: 1
+        sales:
+          type: integer
+          description: Total number of sales of the song
+          example: 1
+        downloads:
+          type: integer
+          description: Total number of downloads of the song
+          example: 1
+      example:
+        playbacks: 1
+        downloads: 1
+        id: 1
+        sales: 1
+    ArtistMetrics:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the artist
+          example: 1
+        playbacks:
+          type: integer
+          description: Total number of playbacks of the artist
+          example: 1
+        songs:
+          type: integer
+          description: Total number of songs of the artist
+          example: 1
+        popularity:
+          type: integer
+          description: Position of the artist in the popularity ranking
+          example: 1
+      example:
+        playbacks: 1
+        songs: 1
+        popularity: 1
+        id: 1
+    Error:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: string
+          description: Error code
+          example: "404"
+        message:
+          type: string
+          description: Descriptive error message
+          example: Resource not found
+  requestBodies:
+    History:
+      description: History object that needs to be linked to an user.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/History"
+    Identifier:
+      description: Some ID
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Identifier"
+  securitySchemes:
+    oversound_auth:
+      type: apiKey
+      name: oversound_auth
+      in: cookie
+      x-apikeyInfoFunc: swagger_server.controllers.authorization_controller.check_oversound_auth
+
